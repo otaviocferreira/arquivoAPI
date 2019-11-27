@@ -225,10 +225,6 @@ public class ArquivoUtil {
 		return Arrays.asList(ExtensaoArquivoCompactado.values()).stream().filter(ext -> ext.getExtensao().equals(extensao)).findFirst().isPresent();
 	}
 
-	/****************************
-	 *** Parte para verificar *** Igualdade de arquivos **
-	 ****************************/
-
 	/**
 	 * Método responsável por listar todos os arquivos do diretório e de seus
 	 * subdiretórios.
@@ -383,7 +379,21 @@ public class ArquivoUtil {
 		return hash;
 	}
 
-	public static boolean ehArquivoComMesmoConteudo(String hashArquivoAntigo, String hashArquivoNovo) throws NoSuchAlgorithmException, IOException {
-		return hashArquivoAntigo.equals(hashArquivoNovo);
+	/**
+	 * Verifica, através do HashCode informado, se os arquivos são iguais, ou seja, com o mesmo conteúdo.
+	 * 
+	 * @param hashPrimeiroArquivo HashCode do primeiro arquivo.
+	 * @param hashSegundoArquivo HashCode do segundo arquivo.
+	 * @return
+	 *         <p>
+	 *         TRUE - São arquivos iguais, com o mesmo conteúdo.
+	 *         </p>
+	 *         <p>
+	 *         FALSE - Não são arquivos iguais, não tem o mesmo conteúdo.
+	 *         </p>
+	 * @since 1.0.0
+	 */
+	public static boolean ehArquivoComMesmoConteudo(String hashPrimeiroArquivo, String hashSegundoArquivo) {
+		return hashPrimeiroArquivo.equals(hashSegundoArquivo);
 	}
 }
