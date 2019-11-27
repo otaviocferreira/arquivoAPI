@@ -396,4 +396,6 @@ public class ArquivoUtil {
 	public static boolean ehArquivoComMesmoConteudo(String hashPrimeiroArquivo, String hashSegundoArquivo) {
 		return hashPrimeiroArquivo.equals(hashSegundoArquivo);
 	}
+	
+	//Testando commit com push no Eclipse (JGit)
 }
