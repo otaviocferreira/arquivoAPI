@@ -42,14 +42,7 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static String getExtensao(String caminhoArquivo) throws IOException {
-		if (null == caminhoArquivo)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-
-		File arquivo = new File(caminhoArquivo);
-
-		if (arquivo.isDirectory() || !arquivo.exists())
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-
+		validaCaminhoArquivo(caminhoArquivo);
 		return caminhoArquivo.substring(caminhoArquivo.lastIndexOf(".") + 1, caminhoArquivo.length());
 	}
 
@@ -64,10 +57,7 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static String getExtensao(File arquivo) throws IOException {
-		if (null == arquivo)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-		if (arquivo.isDirectory() || !arquivo.exists())
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		validaArquivo(arquivo);
 		return arquivo.getName().substring(arquivo.getName().lastIndexOf(".") + 1, arquivo.getName().length());
 	}
 
@@ -81,10 +71,7 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static Long getTamanhoArquivo(File arquivo) throws IOException {
-		if (null == arquivo)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-		if (arquivo.isDirectory() || !arquivo.exists())
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		validaArquivo(arquivo);
 		return arquivo.length();
 	}
 
@@ -98,15 +85,7 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static Long getTamanhoArquivo(String caminhoCompletoArquivo) throws IOException {
-		if (null == caminhoCompletoArquivo)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-
-		File arquivo = new File(caminhoCompletoArquivo);
-
-		if (arquivo.isDirectory() || !arquivo.exists())
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-
-		return arquivo.length();
+		return validaCaminhoArquivo(caminhoCompletoArquivo).length();
 	}
 
 	/**
@@ -128,8 +107,7 @@ public class ArquivoUtil {
 		List<String> linhas = new ArrayList<String>();
 
 		try {
-			if (null == caminhoCompletoArquivo)
-				throw new IOException();
+			validaCaminhoArquivo(caminhoCompletoArquivo);
 			if (!ehArquivoTexto(getExtensao(caminhoCompletoArquivo)))
 				throw new IllegalArgumentException();
 			linhas = Files.lines(Paths.get(caminhoCompletoArquivo)).collect(Collectors.toList());
@@ -160,8 +138,7 @@ public class ArquivoUtil {
 		List<String> linhas = new ArrayList<String>();
 
 		try {
-			if (null == arquivo)
-				throw new IOException();
+			validaArquivo(arquivo);
 			if (!ehArquivoTexto(getExtensao(arquivo)))
 				throw new IllegalArgumentException();
 			linhas = Files.lines(Paths.get(arquivo.getAbsolutePath())).collect(Collectors.toList());
@@ -239,20 +216,15 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static void listaArquivosPorDiretorio(File diretorio, Set<File> arquivos) throws IOException {
-		if (null == diretorio)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
-
-		if (diretorio.isDirectory()) {
-			File[] listagem = diretorio.listFiles();
-			for (File arquivo : listagem) {
-				if (arquivo.isDirectory() && !arquivo.getName().equals(".") && !arquivo.getName().equals("..")) {
-					listaArquivosPorDiretorio(arquivo, arquivos);
-				} else {
-					arquivos.add(arquivo);
-				}
+		validaDiretorio(diretorio);
+		
+		File[] listagem = diretorio.listFiles();
+		for (File arquivo : listagem) {
+			if (arquivo.isDirectory() && !arquivo.getName().equals(".") && !arquivo.getName().equals("..")) {
+				listaArquivosPorDiretorio(arquivo, arquivos);
+			} else {
+				arquivos.add(arquivo);
 			}
-		} else {
-			throw new IllegalArgumentException(ERRO_TIPO_ARQUIVO_INVALIDO);
 		}
 	}
 
@@ -270,22 +242,15 @@ public class ArquivoUtil {
 	 * @since 1.0.0
 	 */
 	public static void listaArquivosPorDiretorio(String caminhoDiretorio, Set<File> arquivos) throws IOException {
-		if (null == caminhoDiretorio)
-			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		File diretorio = validaCaminhoDiretorio(caminhoDiretorio);
 
-		File diretorio = new File(caminhoDiretorio);
-
-		if (diretorio.isDirectory()) {
-			File[] listagem = diretorio.listFiles();
-			for (File arquivo : listagem) {
-				if (arquivo.isDirectory() && !arquivo.getName().equals(".") && !arquivo.getName().equals("..")) {
-					listaArquivosPorDiretorio(arquivo, arquivos);
-				} else {
-					arquivos.add(arquivo);
-				}
+		File[] listagem = diretorio.listFiles();
+		for (File arquivo : listagem) {
+			if (arquivo.isDirectory() && !arquivo.getName().equals(".") && !arquivo.getName().equals("..")) {
+				listaArquivosPorDiretorio(arquivo, arquivos);
+			} else {
+				arquivos.add(arquivo);
 			}
-		} else {
-			throw new IllegalArgumentException(ERRO_TIPO_ARQUIVO_INVALIDO);
 		}
 	}
 
@@ -304,13 +269,7 @@ public class ArquivoUtil {
 	public static String criaHashParaArquivo(String caminhoArquivo) throws NoSuchAlgorithmException, IOException {
 		String hash = "ERRO";
 
-		if (null == caminhoArquivo)
-			throw new IOException();
-
-		File arquivo = new File(caminhoArquivo);
-
-		if (arquivo.isDirectory())
-			throw new IllegalArgumentException();
+		File arquivo = validaCaminhoArquivo(caminhoArquivo);
 
 		try (FileInputStream input = new FileInputStream(arquivo)) {
 			MessageDigest digest = MessageDigest.getInstance("SHA1");
@@ -350,13 +309,9 @@ public class ArquivoUtil {
 	public static String criaHashParaArquivo(File arquivo) throws NoSuchAlgorithmException, IOException {
 		String hash = "ERRO";
 
-		if (null == arquivo)
-			throw new IOException();
-
-		if (arquivo.isDirectory())
-			throw new IllegalArgumentException();
-
 		try (FileInputStream input = new FileInputStream(arquivo)) {
+			validaArquivo(arquivo);
+			
 			MessageDigest digest = MessageDigest.getInstance("SHA1");
 			byte[] buffer = new byte[20480];
 			int nBytes;
@@ -397,5 +352,48 @@ public class ArquivoUtil {
 		return hashPrimeiroArquivo.equals(hashSegundoArquivo);
 	}
 	
-	//Testando commit com push no Eclipse (JGit)
+	public static File validaUltimoArquivoAlterado(String caminhoPrimeiroArquivo, String caminhoSegundoArquivo) throws IOException {
+		validaCaminhoArquivo(caminhoPrimeiroArquivo);		
+		validaCaminhoArquivo(caminhoSegundoArquivo);
+		
+		
+		
+		return null;
+	}
+
+	public static File validaCaminhoArquivo(String caminhoArquivo) throws IOException {
+		File arquivo = validaCaminhoDiretorio(caminhoArquivo);
+
+		if (arquivo.isDirectory() || !arquivo.exists())
+			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		
+		return arquivo;
+	}
+
+	public static File validaCaminhoDiretorio(String caminhoDiretorio) throws IOException {
+		if (null == caminhoDiretorio)
+			throw new IOException(ERRO_CAMINHO_INVALIDO);
+
+		File diretorio = new File(caminhoDiretorio);
+		
+		if (!diretorio.isDirectory())
+			throw new IllegalArgumentException(ERRO_TIPO_ARQUIVO_INVALIDO);
+		
+		return diretorio;
+	}
+
+	public static void validaArquivo(File arquivo) throws IOException {
+		if (null == arquivo)
+			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		if (arquivo.isDirectory() || !arquivo.exists())
+			throw new IOException(ERRO_CAMINHO_INVALIDO);
+	}
+
+	public static void validaDiretorio(File diretorio) throws IOException {
+		if (null == diretorio)
+			throw new IOException(ERRO_CAMINHO_INVALIDO);
+		
+		if (!diretorio.isDirectory())
+			throw new IllegalArgumentException(ERRO_TIPO_ARQUIVO_INVALIDO);
+	}
 }
